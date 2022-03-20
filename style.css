@@ -1,0 +1,16 @@
+/*
+Theme Name:     Houzez Child
+Theme URI:      http://houzez.co/
+Template:       houzez
+Version:        2.5.0
+*/
+
+.alert-dismissible .close {
+    right: auto !important;
+}
+.item-price-wrap.aqar-gate{
+   position: relative ;
+}
+.qrcode, .item-price-wrap.aqar-gate, .page-title{
+    margin-left: 30px;
+}
