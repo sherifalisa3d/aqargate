@@ -6,6 +6,7 @@ check_ajax_referer( 'aqargate_profile_ajax_nonce', 'aqargate-security-profile' )
 
 $user_company = $userlangs = $latitude = $longitude = $tax_number = $user_location = $license = $user_address = $fax_number = $firstname = $lastname = $title = $about = $userphone = $usermobile = $userskype = $facebook = $twitter = $linkedin = $instagram = $pinterest = $profile_pic = $profile_pic_id = $website = $useremail = $service_areas = $specialties = $whatsapp = '';
 
+
 // Update first name
 if ( !empty( $_POST['firstname'] ) ) {
     $firstname = sanitize_text_field( $_POST['firstname'] );
@@ -96,6 +97,28 @@ if ( !empty( $_POST['id_number'] ) ) {
     delete_user_meta( $userID, 'aqar_author_id_number' );
 }
 
+// Update ad number
+if ( !empty( $_POST['ad_number'] ) ) {
+    $ad_number = sanitize_text_field( $_POST['ad_number'] );
+    update_user_meta( $userID, 'aqar_author_ad_number', $ad_number );
+} else {
+    delete_user_meta( $userID, 'aqar_author_ad_number' );
+}
+
+// Update ad number
+if ( !empty( $_POST['ad_number'] ) ) {
+    $ad_number = sanitize_text_field( $_POST['ad_number'] );
+    update_user_meta( $userID, 'aqar_author_ad_number', $ad_number );
+} else {
+    delete_user_meta( $userID, 'aqar_author_ad_number' );
+}
+// type_id
+if ( !empty( $_POST['aqar_author_type_id'] ) ) {
+    $ad_number = sanitize_text_field( $_POST['aqar_author_type_id'] );
+    update_user_meta( $userID, 'aqar_author_type_id', $ad_number );
+} else {
+    delete_user_meta( $userID, 'aqar_author_type_id' );
+}
 // fave_author_service_areas
 if ( !empty( $_POST['service_areas'] ) ) {
     $service_areas = sanitize_text_field( $_POST['service_areas'] );

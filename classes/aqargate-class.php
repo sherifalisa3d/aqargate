@@ -28,8 +28,9 @@ class AqarGate{
         /*-----------------------------------------------------------------------------------*/
         //  sa_cities.sql only run once if we need it .
         /*-----------------------------------------------------------------------------------*/
-        // add_action( 'init', array($this , 'add_sa_cities' ));
         // add_action( 'init', array($this , 'add_sa_provinces' ));
+        // add_action( 'init', array($this , 'add_sa_cities' ));   
+        // add_action( 'init', array($this , 'add_sa_area' ));
     
     }
 
@@ -43,6 +44,8 @@ class AqarGate{
          * Agent and agency Info aqar_author_id_number
         --------------------------------------------------------------------------------*/
         update_user_meta($user_id, 'aqar_author_id_number', $_POST['aqar_author_id_number']);
+        update_user_meta($user_id, 'aqar_author_ad_number', $_POST['aqar_author_ad_number']);
+        update_user_meta($user_id, 'aqar_author_type_id', $_POST['aqar_author_type_id']);
         }
     }
 
@@ -54,11 +57,16 @@ class AqarGate{
         include plugin_dir_path( __FILE__ ) . '/register-ajax-update.php';
     }
 
+    public function add_sa_provinces(){
+        include  plugin_dir_path( dirname( __FILE__ ) ) . '/sa-data/add-sa-provinces.php';
+    }
+
     public function add_sa_cities(){
         include  plugin_dir_path( dirname( __FILE__ ) ) . '/sa-data/add_sa_cities.php';
     }
-    public function add_sa_provinces(){
-        include  plugin_dir_path( dirname( __FILE__ ) ) . '/sa-data/add-sa-provinces.php';
+
+    public function add_sa_area(){
+        include  plugin_dir_path( dirname( __FILE__ ) ) . '/sa-data/add_sa_area.php';
     }
 
     /**
@@ -96,5 +104,3 @@ class AqarGate{
         }
     }
 }
-
-new AqarGate();

@@ -7,7 +7,7 @@ class AqarGate_Export {
 
     public function init_actions(){}
 
-    public function array_csv_download( array &$array, $filename = "export.csv", $delimiter=";" )
+    public static function array_csv_download( array &$array, $filename = "export.csv", $delimiter=";" )
     {
         if (count($array) == 0) {
             return null;
@@ -39,5 +39,10 @@ class AqarGate_Export {
         
         // use exit to get rid of unexpected output afterward
         exit();
+    }
+
+    public function get_all(Type $var = null)
+    {
+        # code...
     }
 }

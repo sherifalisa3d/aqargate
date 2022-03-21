@@ -76,7 +76,6 @@ if( houzez_check_is_elementor() && ( ! function_exists( 'elementor_theme_do_loca
 
 } else {
 
- 
 if ( ! function_exists( 'elementor_theme_do_location' ) || ! elementor_theme_do_location( 'single' ) ) { 
 
     if( have_posts() ): while( have_posts() ): the_post(); ?>

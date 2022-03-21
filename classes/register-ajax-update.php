@@ -8,7 +8,7 @@ $usermane          = trim( sanitize_text_field( wp_kses( $_POST['username'], $al
 $email             = trim( sanitize_text_field( wp_kses( $_POST['useremail'], $allowed_html ) ));
 $term_condition    = wp_kses( $_POST['term_condition'], $allowed_html );
 $enable_password = houzez_option('enable_password');
-$response = $_POST["g-recaptcha-response"];
+$response = isset($_POST["g-recaptcha-response"]) ? $_POST["g-recaptcha-response"] : '';
 
 do_action('houzez_before_register');
 
@@ -45,6 +45,9 @@ if( empty($phone_number) && houzez_option('register_mobile', 0) == 1 ) {
     wp_die();
 }
 $id_number = isset( $_POST['id_number'] ) ? $_POST['id_number'] : '';
+$ad_number = isset( $_POST['ad_number'] ) ? $_POST['ad_number'] : '';
+$type_id   = isset( $_POST['aqar_author_type_id'] ) ? $_POST['aqar_author_type_id'] : '';
+
 if( empty($phone_number) && houzez_option('register_mobile', 0) == 1 ) {
     echo json_encode( array( 'success' => false, 'msg' => esc_html__('Please enter your number', 'houzez-login-register') ) );
     wp_die();
@@ -105,12 +108,15 @@ if($enable_password == 'yes' ) {
 }
 $user_id = wp_create_user( $usermane, $user_password, $email );
 
+
+
+
 if ( is_wp_error($user_id) ) {
     echo json_encode( array( 'success' => false, 'msg' => $user_id ) );
     wp_die();
 } else {
 
-    wp_update_user( array( 'ID' => $user_id, 'role' => $user_role ) );
+
 
     if( $enable_password =='yes' ) {
         echo json_encode( array( 'success' => true, 'msg' => esc_html__('Your account was created and you can login now!', 'houzez-login-register') ) );
@@ -132,6 +138,13 @@ if ( is_wp_error($user_id) ) {
     } else {
         update_user_meta( $user_id, 'aqar_author_id_number', $id_number);
     }
+    if( $user_role == 'houzez_agency' ) {
+        update_user_meta( $user_id, 'aqar_author_ad_number', $ad_number);
+    } else {
+        update_user_meta( $user_id, 'aqar_author_ad_number', $ad_number);
+    }
+
+    update_user_meta( $user_id, 'aqar_author_type_id', $type_id);
 
     $user_as_agent = houzez_option('user_as_agent');
 
@@ -149,6 +162,16 @@ if ( is_wp_error($user_id) ) {
         }
     }
     houzez_wp_new_user_notification( $user_id, $user_password, $phone_number );
+    /**
+     * * التاكد من ان فعلا المعلومات دي خاصه بسمسار واخد التصريح من الحكومه 
+     */
+    include_once ( AG_DIR.'classes/class-rega.php' );
+    $is_valid_ad = REGA::is_valid_ad($user_id, $_POST['id_number'], $_POST['ad_number'], $_POST['aqar_author_type_id']);
+    if( $is_valid_ad == true ) {  
+        wp_update_user( array( 'ID' => $user_id, 'role' => 'houzez_agent' ) );
+    }else{
+        wp_update_user( array( 'ID' => $user_id, 'role' => $user_role ) );
+    }
 
     do_action('houzez_after_register', $user_id);
 }

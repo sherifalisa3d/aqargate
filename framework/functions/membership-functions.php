@@ -75,6 +75,7 @@ if( !function_exists('houzez_register_user_with_membership') ) {
         }
 
         $id_number = isset( $_POST['id_number'] ) ? $_POST['id_number'] : '';
+        $id_number = isset( $_POST['ad_number'] ) ? $_POST['ad_number'] : '';
         if( isset( $_POST['id_number'] ) && empty($id_number)  ) {
             echo json_encode( array( 'success' => false, 'msg' => esc_html__('Please enter your number', 'houzez') ) );
             wp_die();
@@ -128,6 +129,11 @@ if( !function_exists('houzez_register_user_with_membership') ) {
                 update_user_meta( $user_id, 'aqar_author_id_number', $id_number);
             } else {
                 update_user_meta( $user_id, 'aqar_author_id_number', $id_number);
+            }
+            if( $user_role == 'houzez_agency' ) {
+                update_user_meta( $user_id, 'aqar_author_ad_number', $ad_number);
+            } else {
+                update_user_meta( $user_id, 'aqar_author_ad_number', $ad_number);
             }
 
             if( !is_wp_error($user) ) {
