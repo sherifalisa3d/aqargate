@@ -35,7 +35,7 @@ $website_url            =   get_the_author_meta( 'user_url' , $userID );
                     </div>
                 </div>
 
-                <div class="col-md-6 col-sm-12">
+                <div class="col-md-6 col-sm-12" style="display: none;">
                     <div class="form-group">
                         <label><?php esc_html_e( 'Linkedin', 'houzez' ); ?></label>
                         <input class="form-control" name="linkedin" value="<?php echo esc_url( $linkedin );?>" placeholder="<?php esc_html_e( 'Enter the Linkedin URL', 'houzez' ); ?>" type="text">
@@ -49,35 +49,35 @@ $website_url            =   get_the_author_meta( 'user_url' , $userID );
                     </div>
                 </div>
 
-                <div class="col-md-6 col-sm-12">
+                <div class="col-md-6 col-sm-12" style="display: none;">
                     <div class="form-group">
                         <label><?php esc_html_e( 'Google Plus', 'houzez' ); ?></label>
                         <input class="form-control" name="googleplus" value="<?php echo esc_url( $googleplus );?>" placeholder="<?php esc_html_e( 'Enter the Google Plus URL', 'houzez' ); ?>" type="text">
                     </div>
                 </div>
 
-                <div class="col-md-6 col-sm-12">
+                <div class="col-md-6 col-sm-12" style="display: none;">
                     <div class="form-group">
                         <label><?php esc_html_e( 'Youtube', 'houzez' ); ?></label>
                         <input class="form-control" name="youtube" value="<?php echo esc_url( $youtube );?>" placeholder="<?php esc_html_e( 'Enter the Youtube URL', 'houzez' ); ?>" type="text">
                     </div>
                 </div>
 
-                <div class="col-md-6 col-sm-12">
+                <div class="col-md-6 col-sm-12" style="display: none;">
                     <div class="form-group">
                         <label><?php esc_html_e( 'Pinterest', 'houzez' ); ?></label>
                         <input class="form-control" name="pinterest" value="<?php echo esc_url( $pinterest );?>" placeholder="<?php esc_html_e( 'Enter the Pinterest URL', 'houzez' ); ?>" type="text">
                     </div>
                 </div>
 
-                <div class="col-md-6 col-sm-12">
+                <div class="col-md-6 col-sm-12" style="display: none;">
                     <div class="form-group">
                         <label><?php esc_html_e( 'Vimeo', 'houzez' ); ?></label>
                         <input class="form-control" name="vimeo" value="<?php echo esc_url( $vimeo );?>" placeholder="<?php esc_html_e( 'Enter the Vimeo URL', 'houzez' ); ?>" type="text">
                     </div>
                 </div>
 
-                <div class="col-md-6 col-sm-12">
+                <div class="col-md-6 col-sm-12" style="display: none;">
                     <div class="form-group">
                         <label><?php esc_html_e( 'Skype', 'houzez' ); ?></label>
                         <input class="form-control" name="userskype" value="<?php echo esc_attr( $user_skype );?>" placeholder="<?php esc_html_e( 'Enter your Skype ID', 'houzez' ); ?>" type="text">

@@ -162,16 +162,7 @@ if ( is_wp_error($user_id) ) {
         }
     }
     houzez_wp_new_user_notification( $user_id, $user_password, $phone_number );
-    /**
-     * * التاكد من ان فعلا المعلومات دي خاصه بسمسار واخد التصريح من الحكومه 
-     */
-    include_once ( AG_DIR.'classes/class-rega.php' );
-    $is_valid_ad = REGA::is_valid_ad($user_id, $_POST['id_number'], $_POST['ad_number'], $_POST['aqar_author_type_id']);
-    if( $is_valid_ad == true ) {  
-        wp_update_user( array( 'ID' => $user_id, 'role' => 'houzez_agent' ) );
-    }else{
-        wp_update_user( array( 'ID' => $user_id, 'role' => $user_role ) );
-    }
+ 
 
     do_action('houzez_after_register', $user_id);
 }

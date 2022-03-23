@@ -61,7 +61,7 @@ if (houzez_edit_property()) {
 	<h2><?php echo houzez_option('cls_map', 'Map'); ?></h2>
 	<div class="dashboard-content-block">
 		<div class="row">
-			<div class="col-md-6 col-sm-12 submit-property-map-area">
+			<div class="col-md-12 col-sm-12 submit-property-map-area">
 				<div class="form-group dashboard-map-field">
 					<label><?php echo houzez_option('cl_drag_drop_text', 'Drag and drop the pin on map to find exact location'); ?></label>
 
@@ -74,9 +74,10 @@ if (houzez_edit_property()) {
 				<a id="reset" href="#" style="display:none;"><?php esc_html_e('Reset Marker', 'houzez');?></a>
 			</div><!-- col-md-6 col-sm-12 -->
 			
-			<div class="col-md-6 col-sm-12 submit-lat-long">
+			<div class="col-md-6 col-sm-12 submit-lat-long mt-5">
 				<?php get_template_part('template-parts/dashboard/submit/form-fields/latitude'); ?>
-				
+			</div>
+			<div class="col-md-6 col-sm-12 submit-lat-long mt-5">	
 				<?php get_template_part('template-parts/dashboard/submit/form-fields/longitude'); ?>
 				
 				<?php 

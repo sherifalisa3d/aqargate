@@ -142,7 +142,7 @@ $packages_page_link = houzez_get_template_link('template/template-packages.php')
                             placeholder="<?php esc_html_e('Enter your mobile phone number','houzez');?>">
                     </div>
                 </div>
-                <div class="col-sm-6 col-xs-12">
+                <div class="col-sm-6 col-xs-12" style="display: none;">
                     <div class="form-group">
                         <label for="whatsapp"><?php esc_html_e('WhatsApp','houzez');?></label>
                         <input type="text" name="whatsapp" class="form-control"
@@ -192,7 +192,7 @@ $packages_page_link = houzez_get_template_link('template/template-packages.php')
                             placeholder="<?php esc_html_e('Enter your phone number','houzez');?>">
                     </div>
                 </div>
-                <div class="col-sm-6 col-xs-12">
+                <div class="col-sm-6 col-xs-12" style="display: none;">
                     <div class="form-group">
                         <label for="fax_number"><?php esc_html_e('Fax Number','houzez');?></label>
                         <input type="text" name="fax_number" class="form-control"
@@ -201,7 +201,7 @@ $packages_page_link = houzez_get_template_link('template/template-packages.php')
                     </div>
                 </div>
 
-                <div class="col-sm-6 col-xs-12">
+                <div class="col-sm-6 col-xs-12" style="display: none;">
                     <div class="form-group">
                         <label for="userlangs"><?php esc_html_e('Language','houzez');?></label>
                         <input type="text" name="userlangs"

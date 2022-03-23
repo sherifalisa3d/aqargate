@@ -54,29 +54,6 @@ $show_hide_roles = houzez_option('show_hide_roles');
                     placeholder="<?php esc_html_e('Phone','houzez'); ?>" />
             </div><!-- input-group -->
         </div><!-- form-group -->
-        <div class="form-group">
-            <div class="form-group-field username-field">
-                <input class="form-control" name="id_number" type="text"
-                    placeholder="<?php esc_html_e('رقم الهوية','houzez'); ?>" />
-            </div><!-- input-group -->
-        </div><!-- form-group -->
-        <div class="form-group">
-            <div class="form-group-field username-field">
-                <input class="form-control" name="ad_number" type="text"
-                    placeholder="<?php esc_html_e('رقم المعلن ان وجد','houzez'); ?>" />
-            </div><!-- input-group -->
-        </div><!-- form-group -->
-        <div class="form-group">
-            <label for="aqar_author_type_id">
-                <?php esc_html_e('نوع المعلن','houzez');?>
-            </label>
-            <select name="aqar_author_type_id" data-size="5" id="aqar_author_type_id" class="selectpicker form-control"
-                title="يرجى الاختيار">
-                <option value="1">مواطن</option>
-                <option value="2">مقيم</option>
-                <option value="3">منشأة</option>
-            </select>
-        </div><!-- form-group -->
         <?php } ?>
 
         <?php if( houzez_option('enable_password') == 'yes' ) { ?>

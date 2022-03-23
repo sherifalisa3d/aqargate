@@ -16,7 +16,7 @@ class AG_Prop
             $post = array( 'ID' => $prop_id, 'post_status' => 'draft' );
             wp_update_post($post);
         }else {
-            $post = array( 'ID' => $prop_id, 'post_status' => 'publis' );
+            $post = array( 'ID' => $prop_id, 'post_status' => 'publish' );
             wp_update_post($post);
         }
     }

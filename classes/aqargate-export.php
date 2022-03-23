@@ -5,23 +5,19 @@ class AqarGate_Export {
         $this->init_actions();
     }
 
-    public function init_actions(){}
+    public function init_actions(){
+        
+    }
 
     public static function array_csv_download( array &$array, $filename = "export.csv", $delimiter=";" )
     {
         if (count($array) == 0) {
             return null;
           }
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename="' . $filename . '";' );
-        header('Content-Transfer-Encoding: binary');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-        header('Pragma: public');
+          header( 'Content-Type: application/csv' );
+          header( 'Content-Disposition: attachment; filename="' . $filename . '";' );
         
         // clean output buffer
-        ob_end_clean();
         
         $handle = fopen( 'php://output', 'w' );
         fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
@@ -35,14 +31,10 @@ class AqarGate_Export {
         fclose( $handle );
     
         // flush buffer
-        ob_flush();
+        
         
         // use exit to get rid of unexpected output afterward
         exit();
     }
 
-    public function get_all(Type $var = null)
-    {
-        # code...
-    }
 }

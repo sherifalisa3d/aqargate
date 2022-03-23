@@ -313,6 +313,14 @@ if( !empty( $_POST['useremail'] ) ) {
 
     }
 }
+   /**
+     * * التاكد من ان فعلا المعلومات دي خاصه بسمسار واخد التصريح من الحكومه 
+     */
+    include_once ( AG_DIR.'classes/class-rega.php' );
+    $is_valid_ad = REGA::is_valid_ad($userID, $_POST['id_number'], $_POST['ad_number'], $_POST['aqar_author_type_id']);
+    if( $is_valid_ad == true ) {  
+        wp_update_user( array( 'ID' => $userID, 'role' => 'houzez_agent' ) );
+    }
 wp_update_user( array ('ID' => $userID, 'display_name' => $_POST['display_name'] ) );
 echo json_encode( array( 'success' => true, 'msg' => esc_html__('تم تحديث الملف الشخصي', 'houzez') ) );
 die();

@@ -1,19 +1,14 @@
 <?php
-add_action( 'wp_enqueue_scripts', 'my_theme_enqueue_styles', 999 );
-function my_theme_enqueue_styles() {
-    $parenthandle = 'houzez-style'; // This is 'twentyfifteen-style' for the Twenty Fifteen theme.
-    $theme = wp_get_theme();
-    wp_enqueue_style( 'child-style', get_stylesheet_uri(),
-        array( $parenthandle ),
-        $theme->get('Version') // this only works if you have Version in the style header
-    );
+add_action( 'wp_enqueue_scripts', 'ag_enqueue_styles' );
+function ag_enqueue_styles() {
+    wp_enqueue_style( 'houzez-child', get_stylesheet_uri() );
 }
 // Constants
 define('AG_DIR', __DIR__.'/');
 
 // Helpers
 include_once ( AG_DIR.'helpers/ag_helpers.php' );
-
+include_once ( AG_DIR.'helpers/ag_get_array_property_data.php' );
 // Classes
 include_once ( AG_DIR.'classes/class-crb.php' );
 new AG_CF;
@@ -32,16 +27,20 @@ function csv_to_array($file) {
         die('Error opening file');
     }
     
-    $headers = fgetcsv($handle, 256, ';');
-    $headers = preg_replace('/ ^[\pZ\p{Cc}\x{feff}]+|[\pZ\p{Cc}\x{feff}]+$/ux', '', $headers);
+    $headers = fgetcsv($handle, 10000, ';');
+    // $headers = preg_replace('/ ^[\pZ\p{Cc}\x{feff}]+|[\pZ\p{Cc}\x{feff}]+$/ux', '', $headers);
     $_data = array();
     
-    while ($row = fgetcsv($handle, 256, ';')) {
-        $row = preg_replace('/ ^[\pZ\p{Cc}\x{feff}]+|[\pZ\p{Cc}\x{feff}]+$/ux', '', $row);
-        $_data[] = array_combine($headers, $row);
+    while ($row = fgetcsv($handle, 10000, ';')) {
+        // $row = preg_replace('/ ^[\pZ\p{Cc}\x{feff}]+|[\pZ\p{Cc}\x{feff}]+$/ux', '', $row);
+        if (count($row) == count($headers)) {
+            $_data[] = array_combine($headers, $row);
+        }else{
+            $_data[] = array_merge($headers, $row);
+        }
     }
     fclose($handle);
 
-    return array_filter($_data);
+    return $_data;
   
   }

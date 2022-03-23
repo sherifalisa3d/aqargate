@@ -87,13 +87,13 @@ class REGA{
 
     //  $user_id = $user_id > 0 ? $user_id : get_current_user_id();
 
-        if(!empty ($id_number )) {
+        if(empty($id_number )) {
             $id_number = get_the_author_meta( 'aqar_author_id_number' , $user_id, true );
         }
-        if (!empty($ad_number)) {
+        if (empty($ad_number)) {
             $ad_number = get_the_author_meta('aqar_author_ad_number', $user_id, true);
         }
-        if (!empty($type_id)) {
+        if (empty($type_id)) {
             $type_id = get_the_author_meta('aqar_author_type_id', $user_id, true);
         }
 
@@ -122,35 +122,38 @@ class REGA{
     * 
     */
     public static function is_valid_auth_ad( $prop_id, $user_id ){
- 
-        $id_number = get_the_author_meta( 'aqar_author_id_number' , $user_id );
-        $ad_number = get_the_author_meta( 'aqar_author_ad_number', $user_id );
-        $type_id   = get_the_author_meta( 'aqar_author_type_id', $user_id );
+        $enable_api = carbon_get_theme_option( 'crb_show_api' );
+      if ($enable_api != 1) {
+           return true;
+     } else {
+         $id_number = get_the_author_meta('aqar_author_id_number', $user_id);
+         $ad_number = get_the_author_meta('aqar_author_ad_number', $user_id);
+         $type_id   = get_the_author_meta('aqar_author_type_id', $user_id);
         
-        $body_data = array(
+         $body_data = array(
             'Type_Id'     => $type_id ,
             'Id_Number'   => $id_number,
             'Ad_Number'   => $ad_number,
-            'Auth_Number' => get_post_meta( $prop_id, 'fave_d8b1d982d985-d8a7d984d8aad981d988d98ad8b6', true ),
+            'Auth_Number' => get_post_meta($prop_id, 'fave_d8b1d982d985-d8a7d984d8aad981d988d98ad8b6', true),
         );
 
-        $response = self:: do_request(
-            'GET',
-            'DelegatedAd/isValidAuthAd',
-            array( 
+         $response = self::do_request(
+             'GET',
+             'DelegatedAd/isValidAuthAd',
+             array(
                 'Authorization: ' . self::token(),
                 'Content-Type: application/json'
             ),
-            $body_data
-        );
+             $body_data
+         );
 
-        if( $response === true ){
-            return $response;
-        }
+         if ($response === true) {
+             return $response;
+         }
            
-            $errors = self:: rega_errors($response);
-            return $errors;
-        
+         $errors = self::rega_errors($response);
+         return $errors;
+     }
         
     }
 
