@@ -12,7 +12,7 @@ class AG_Prop
 
     public function prop_authorization_pending( $prop_id ){
         include_once ( AG_DIR.'classes/class-rega.php' );
-        if( REGA::is_valid_auth_ad( $prop_id, get_current_user_id()) !== true  ){
+        if( REGA::is_valid_ad( $prop_id, get_current_user_id()) !== true  ){
             $post = array( 'ID' => $prop_id, 'post_status' => 'draft' );
             wp_update_post($post);
         }else {

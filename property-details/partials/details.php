@@ -1,5 +1,6 @@
 <?php
-global $hide_fields;
+global $hide_fields, $post;
+
 $prop_id = houzez_get_listing_data('property_id');
 $prop_price = houzez_get_listing_data('property_price');
 $prop_size = houzez_get_listing_data('property_size');
@@ -13,6 +14,8 @@ $property_status = houzez_taxonomy_simple('property_status');
 $property_type = houzez_taxonomy_simple('property_type');
 $garage_size = houzez_get_listing_data('property_garage_size');
 $additional_features = get_post_meta( get_the_ID(), 'additional_features', true);
+$ad_number = get_user_meta( $post->post_author, 'aqar_author_ad_number', true);
+
 ?>
 <div class="detail-wrap">
 	<ul class="<?php echo houzez_option('prop_details_cols', 'list-2-cols'); ?> list-unstyled">
@@ -104,7 +107,7 @@ $additional_features = get_post_meta( get_the_ID(), 'additional_features', true)
         //Custom Fields
         if(class_exists('Houzez_Fields_Builder')) {
         $fields_array = Houzez_Fields_Builder::get_form_fields(); 
-
+  
             if(!empty($fields_array)) {
                 foreach ( $fields_array as $value ) {
 
@@ -141,6 +144,13 @@ $additional_features = get_post_meta( get_the_ID(), 'additional_features', true)
                     
                 }
             }
+        }
+
+        if( !empty( $ad_number ) ) {
+            echo '<li>
+	                <strong>رقم المعلن </strong> 
+	                <span>'.$ad_number.'</span>
+                </li>';
         }
         ?>
 	</ul>

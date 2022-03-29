@@ -30,7 +30,7 @@ class AG_CF
             array(
                 Field::make( 'text', 'client_id', __( 'Client ID', 'ag' ) ),
                 Field::make( 'text', 'client_secret', __( 'Client Secret', 'ag' ) ),
-                Field::make( 'checkbox', 'show_api', 'Enable Api' ),
+                Field::make( 'checkbox', 'aq_show_api', 'Enable Api' ),
                
             )
         )
@@ -53,7 +53,6 @@ class AG_CF
     }
 
     public function ag_tax_select(){
-        $fields_array = Houzez_Fields_Builder::get_form_fields(); 
         Container::make( 'term_meta', __( 'Select Fileds To Show' ) )
         ->where( 'term_taxonomy', '=', 'property_type' )
         ->add_fields( array(
@@ -64,10 +63,14 @@ class AG_CF
     }
 
     public function ag_fields_array(){
-        //Custom Fields
+        //get Fields
+        $fields_builder = array();
         $adp_details_fields = houzez_option('adp_details_fields');
-        $fields_builder = $adp_details_fields['enabled'];
-         unset($fields_builder['placebo']);
+        if( is_array($adp_details_fields) ){
+            $fields_builder = $adp_details_fields['enabled'];
+            unset($fields_builder['placebo']);
+        }
+        
          return $fields_builder;
     }
 

@@ -6,7 +6,7 @@
  * Time: 4:12 PM
  */
 
-global $current_user;
+global $current_user, $post;
 
 wp_get_current_user();
 $userID = $current_user->ID;
@@ -54,7 +54,7 @@ if( is_page_template( 'template/user_dashboard_submit.php' ) ) {
 
         <form autocomplete="off" id="submit_property_form" name="new_post" method="post" action="#" enctype="multipart/form-data"
               class="add-frontend-property" novalidate>
-
+            <?php ag_publish_edit_alert( $post->ID,  __('Submitted successfully.', 'houzez'), get_current_user_id() );  ?>
             <div class="validate-errors alert alert-danger houzez-hidden" role="alert">
                 <?php echo wp_kses(__( '<strong>Error!</strong> Please fill out the following required fields.', 'houzez' ), $allowed_html); ?>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">

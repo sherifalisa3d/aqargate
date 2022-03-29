@@ -81,7 +81,7 @@ if (houzez_edit_property()) {
 				<?php get_template_part('template-parts/dashboard/submit/form-fields/longitude'); ?>
 				
 				<?php 
-				if($houzez_map_system == 'google') { 
+				if( $houzez_map_system == 'google' ) { 
 					get_template_part('template-parts/dashboard/submit/form-fields/street-view'); 
 				}
 				?>

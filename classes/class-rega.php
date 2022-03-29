@@ -55,14 +55,11 @@ class REGA{
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
         $response = curl_exec($curl); 
-        $err = curl_error($curl);
         curl_close($curl);
-        if ($err) {
-        echo "cURL Error #:" . $err;
-        } else {
-            $response =  json_decode($response , true);
-            return $response;
-        }
+        
+         $response =  json_decode($response , true);
+          return $response;
+        
     }
     
     public static function id_types(){
@@ -83,21 +80,19 @@ class REGA{
     * 
     */
 
-    public static function is_valid_ad($user_id = 0, $id_number, $ad_number, $type_id){
+    public static function is_valid_ad($prop_id, $userID = 0){
 
-    //  $user_id = $user_id > 0 ? $user_id : get_current_user_id();
-
-        if(empty($id_number )) {
-            $id_number = get_the_author_meta( 'aqar_author_id_number' , $user_id, true );
-        }
-        if (empty($ad_number)) {
-            $ad_number = get_the_author_meta('aqar_author_ad_number', $user_id, true);
-        }
-        if (empty($type_id)) {
-            $type_id = get_the_author_meta('aqar_author_type_id', $user_id, true);
+        $enable_api = carbon_get_theme_option( 'aq_show_api' );
+ 
+        if ( $enable_api !== true ) {
+            return true;
         }
 
-        $response = self:: do_request(
+        $id_number = get_user_meta( $userID, 'aqar_author_id_number', true );
+        $ad_number = get_user_meta( $userID, 'aqar_author_ad_number', true);
+        $type_id   = get_user_meta( $userID, 'aqar_author_type_id', true);
+    
+        $response = self::do_request(
             'GET',
             'DelegatedAd/isValidAd',
             array( 
@@ -111,7 +106,13 @@ class REGA{
             )
         );
 
-        return $response;
+        if ($response === true) {
+            return $response;
+        }
+          
+        $errors = self::rega_errors($response);
+        return $errors;
+     
         
     }
 
@@ -121,15 +122,14 @@ class REGA{
     * an ad about this prob
     * 
     */
-    public static function is_valid_auth_ad( $prop_id, $user_id ){
-        $enable_api = carbon_get_theme_option( 'crb_show_api' );
-      if ($enable_api != 1) {
-           return true;
-     } else {
-         $id_number = get_the_author_meta('aqar_author_id_number', $user_id);
-         $ad_number = get_the_author_meta('aqar_author_ad_number', $user_id);
-         $type_id   = get_the_author_meta('aqar_author_type_id', $user_id);
-        
+    public static function is_valid_auth_ad( $prop_id, $userID ){
+
+     
+      
+        $id_number = get_user_meta( $userID, 'aqar_author_id_number', true );
+        $ad_number = get_user_meta( $userID, 'aqar_author_ad_number', true);
+        $type_id   = get_user_meta( $userID, 'aqar_author_type_id', true);
+    
          $body_data = array(
             'Type_Id'     => $type_id ,
             'Id_Number'   => $id_number,
@@ -153,7 +153,7 @@ class REGA{
            
          $errors = self::rega_errors($response);
          return $errors;
-     }
+      
         
     }
 
