@@ -71,7 +71,7 @@ function houzez_get_search_taxonomies($taxonomy_name, $searched_data = "", $args
                 $parent_country = isset($term_meta['parent_country']) ? $term_meta['parent_country'] : '';
                 $parent_country = sanitize_title($parent_country);
                 $data_attr = 'data-belong="'.esc_attr($parent_country).'"';
-                $data_subtext = 'data-subtext="';
+                $data_subtext = 'data-subtext=""';
 
             }
 
@@ -146,4 +146,52 @@ function houzez_get_search_taxonomies($taxonomy_name, $searched_data = "", $args
     }
     echo $output;
 
+}
+
+function get_houzez_listing_expire($postID) {
+    global $post;
+    if(empty($post->ID)){
+        $postID = $postID;
+    }else{
+        $postID = $post->ID;
+    }
+    //If manual expire date set
+    $manual_expire = get_post_meta( $postID, 'houzez_manual_expire', true );
+    if( !empty( $manual_expire )) {
+        $expiration_date = get_post_meta( $postID,'_houzez_expiration_date',true );
+        return ( $expiration_date ? get_date_from_gmt(gmdate('Y-m-d H:i:s', $expiration_date), get_option('date_format').' '.get_option('time_format')) : __('Never', 'houzez'));
+    } else {
+        $submission_type = houzez_option('enable_paid_submission');
+        // Per listing
+        if( $submission_type == 'per_listing' || $submission_type == 'free_paid_listing' || $submission_type == 'no' ) {
+            $per_listing_expire_unlimited = houzez_option('per_listing_expire_unlimited');
+            if( $per_listing_expire_unlimited != 0 ) {
+                $per_listing_expire = houzez_option('per_listing_expire');
+
+                $publish_date = $post->post_date;
+                return date_i18n( get_option('date_format').' '.get_option('time_format'), strtotime( $publish_date. ' + '.$per_listing_expire.' days' ) );
+            }
+        } elseif( $submission_type == 'membership' ) {
+            $post_author = get_post_field( 'post_author', $postID );
+            $post_date = get_post_field( 'post_date', $postID );
+            // $author_id = get_post_field ('post_author', $postID);
+            $package_id = get_post_field ('post_author', $postID);
+            if( !empty($package_id) ) {
+                $billing_time_unit = get_post_meta( $package_id, 'fave_billing_time_unit', true );
+                $billing_unit = get_post_meta( $package_id, 'fave_billing_unit', true );
+
+                if( $billing_time_unit == 'Day')
+                    $billing_time_unit = 'days';
+                elseif( $billing_time_unit == 'Week')
+                    $billing_time_unit = 'weeks';
+                elseif( $billing_time_unit == 'Month')
+                    $billing_time_unit = 'months';
+                elseif( $billing_time_unit == 'Year')
+                    $billing_time_unit = 'years';
+
+                $publish_date = $post_date;
+                return date_i18n( get_option('date_format').' '.get_option('time_format'), strtotime( $publish_date. ' + '.$billing_unit.' '.$billing_time_unit ) );
+            }
+        }
+    }
 }
