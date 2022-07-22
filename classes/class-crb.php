@@ -17,7 +17,6 @@ class AG_CF
 
     public function ag_settings_panel() {
         if ( is_admin() && isset($_GET['page']) == 'crb_carbon_fields_container_ag_settings.php') {
-            $this->ag_html_export_field();
             $current_page = admin_url("admin.php?page=".$_GET["page"]);
             $html = '<a href="' . add_query_arg('export', '1', $current_page) . '" class="button button-primary">Export</a>';
         } else {
@@ -40,17 +39,7 @@ class AG_CF
         ) );
     }
 
-    public function ag_html_export_field() {
-        $get_array_property_data = get_array_property_data(); 
-        $time_now = date('Ymd_his');
-        $filename = "aqargate.com_". $time_now .".csv";
- 
-        if (isset($_GET['export']) && $_GET['export'] === '1') {
-            $AqarGate_Export = new AqarGate_Export();
-            $AqarGate_Export->array_csv_download( $get_array_property_data, $filename, $delimiter=";" );
-            die();
-        }
-    }
+   
 
     public function ag_tax_select(){
         Container::make( 'term_meta', __( 'Select Fileds To Show' ) )

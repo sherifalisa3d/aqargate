@@ -4,6 +4,7 @@ if (houzez_edit_property()) {
 	global $property_data;
 
 	$state = houzez_get_post_term_slug($property_data->ID, 'property_state');
+	$state = urldecode( $state ) ;
 }
 ?>
 <div class="form-group">

@@ -213,7 +213,6 @@ if(houzez_form_type()) {
                 <div class="property-form-wrap">
                 	<div class="property-form clearfix">
 						<form method="post" action="#">
-							
 							<?php echo $return_array['agent_data']; ?>
 
 							<?php if( $hide_form_fields['name'] != 1 ) { ?>

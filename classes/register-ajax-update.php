@@ -116,7 +116,7 @@ if ( is_wp_error($user_id) ) {
     wp_die();
 } else {
 
-
+    wp_update_user( array( 'ID' => $user_id, 'role' => $user_role ) );
 
     if( $enable_password =='yes' ) {
         echo json_encode( array( 'success' => true, 'msg' => esc_html__('Your account was created and you can login now!', 'houzez-login-register') ) );
@@ -150,6 +150,7 @@ if ( is_wp_error($user_id) ) {
 
     if( $user_as_agent == 'yes' ) {
 
+
         if( !empty($firstname) && !empty($lastname) ) {
             $usermane = $firstname.' '.$lastname;
         }
@@ -162,7 +163,6 @@ if ( is_wp_error($user_id) ) {
         }
     }
     houzez_wp_new_user_notification( $user_id, $user_password, $phone_number );
- 
 
     do_action('houzez_after_register', $user_id);
 }

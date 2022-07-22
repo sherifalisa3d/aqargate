@@ -21,12 +21,14 @@ $tools_position = houzez_option('property_tools_mobile_pos', 'under_banner');
                 get_template_part('template-parts/listing/partials/item-featured-label'); 
             }?>
             <?php get_template_part('property-details/partials/item-labels-mobile'); ?>
-            <?php 
-            if( wp_is_mobile() ) {
-            get_template_part('property-details/partials/title'); 
-            }?> 
+            <div class="qr-mobile">
+               <?php get_template_part('property-details/partials/qr'); ?>
+            </div>
+            <div class="prop-title-mobile">
+            <?php  get_template_part('property-details/partials/title'); ?>             
             <?php get_template_part('property-details/partials/item-address'); ?>
             <?php get_template_part('property-details/partials/item-price'); ?>
+			</div>
             <?php if( $tools_position == 'under_title' ) { ?>
             <div class="mobile-property-tools mobile-property-tools-bottom clearfix">
                 <?php get_template_part('property-details/partials/tools'); ?> 

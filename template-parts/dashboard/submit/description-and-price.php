@@ -16,19 +16,23 @@ if(empty($default_multi_currency)) {
 
 		<div class="row">
 			<?php if( $hide_prop_fields['prop_type'] != 1 ) { ?>
-			<div class="col-md-4 col-sm-12">
+			<div class="col-md-3 col-sm-12">
 				<?php get_template_part('template-parts/dashboard/submit/form-fields/type'); ?>
 			</div>
 			<?php } ?>
-
+			<?php 
+				echo '<div class="col-md-3 col-sm-12">';
+					houzez_get_custom_add_listing_field("d986d988d8b9-d8a7d984d8a5d8b9d984d8a7d986-d8a7d984d8b1d8a6d98ad8b3d98a");
+				echo '</div>';
+			?>
 			<?php if( $hide_prop_fields['prop_status'] != 1 ) { ?>
-			<div class="col-md-4 col-sm-12">
+			<div class="col-md-3 col-sm-12">
 				<?php get_template_part('template-parts/dashboard/submit/form-fields/status'); ?>
 			</div>
 			<?php } ?>
 
 			<?php if( $hide_prop_fields['prop_label'] != 1 ) { ?>
-			<div class="col-md-4 col-sm-12">
+			<div class="col-md-3 col-sm-12">
 				<?php get_template_part('template-parts/dashboard/submit/form-fields/label'); ?>
 			</div>
 			<?php } ?>

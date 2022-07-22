@@ -5,6 +5,7 @@ if (houzez_edit_property()) {
 	global $property_data;
 
 	$city = houzez_get_post_term_slug($property_data->ID, 'property_city');
+	$city = urldecode( $city );
 }
 ?>
 <div class="form-group">

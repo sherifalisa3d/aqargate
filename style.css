@@ -9,5 +9,15 @@ Version:        2.5.0
     right: auto !important;
 }
 .qrcode, .item-price-wrap.aqar-gate, .page-title{
-    margin-left: 30px;
+    margin: 10px;
+}
+.block-content-wrap .detail-wrap li strong {
+    white-space: normal !important;
+}
+.prop-title-mobile{
+	max-width: calc( 100% - 120px );
+}
+.qr-mobile {
+    position: absolute;
+    left: 0;
 }

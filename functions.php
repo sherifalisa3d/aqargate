@@ -19,6 +19,9 @@ new AG_Prop;
 include_once ( AG_DIR . 'classes/aqargate-class.php' );
 new AqarGate();
 
+
+include_once ( AG_DIR . 'rest-api/class-aqargate-api.php' );
+
 include_once ( AG_DIR . 'classes/aqargate-export.php' );
 
 function csv_to_array($file) {

@@ -35,8 +35,9 @@ $packages_page_link = houzez_get_template_link('template/template-packages.php')
 <div class="dashboard-content-block">
     <div class="row">
         <div class="col-md-3 col-sm-12">
-            <a href="<?php echo esc_url($packages_page_link); ?>" target="_blank"
-                class="btn btn-warning mb-4 text-center w-100"> شراء عضوية </a>
+          <a href="<?php echo esc_url($packages_page_link); ?>" target="_blank" class="btn btn-warning mb-4 text-center w-100" style="display:none;">   
+            شراء عضوية
+        </a>
             <?php get_template_part('template-parts/dashboard/profile/photo'); ?>
         </div><!-- col-md-3 col-sm-12 -->
 
@@ -152,7 +153,7 @@ $packages_page_link = houzez_get_template_link('template/template-packages.php')
                 </div>
                 <div class="col-sm-6 col-xs-12">
                     <div class="form-group">
-                        <label for="id_number"><?php esc_html_e('رقم الهوية','houzez');?></label>
+                        <label for="id_number"><?php esc_html_e('رقم الهوية / أو السجل التجاري','houzez');?></label>
                         <input type="text" name="id_number" value="<?php echo esc_attr( $id_number );?>"
                             class="form-control" placeholder="<?php esc_html_e('يرجي ادخال رقم الهوية','houzez');?>">
                     </div>

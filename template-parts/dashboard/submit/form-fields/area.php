@@ -4,6 +4,7 @@ if (houzez_edit_property()) {
 	global $property_data;
 
 	$area = houzez_get_post_term_slug($property_data->ID, 'property_area');
+	$area = urldecode( $area ) ;
 }
 ?>
 <div class="form-group">

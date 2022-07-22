@@ -21,8 +21,9 @@ if ( isset($_GET) && !empty( $_GET['edit_property'] ) ) {
     if (!empty($ag_fields)) {
         $fields_builder = array_flip($ag_fields);
     }
+	
 }
-
+unset($fields_builder['d986d988d8b9-d8a7d984d8a5d8b9d984d8a7d986-d8a7d984d8b1d8a6d98ad8b3d98a']);
 ?>
 <div id="details" class="dashboard-content-block-wrap <?php echo esc_attr($is_multi_steps);?>">
 	<h2><?php echo houzez_option('cls_details', 'Details'); ?></h2>
