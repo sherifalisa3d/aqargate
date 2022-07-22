@@ -194,6 +194,7 @@ function get_houzez_listing_expire($postID) {
             }
         }
     }
+<<<<<<< HEAD
 }
 function houzez_get_agent_info_top($args, $type, $is_single = true)
 {
@@ -416,4 +417,6 @@ function houzez_get_localization() {
     );
 
     return $localization;
+=======
+>>>>>>> 72c0d7dc0ea0bc22fdcda7aa47a48b488f4c6617
 }

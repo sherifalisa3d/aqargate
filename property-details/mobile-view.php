@@ -25,7 +25,12 @@ $tools_position = houzez_option('property_tools_mobile_pos', 'under_banner');
                <?php get_template_part('property-details/partials/qr'); ?>
             </div>
             <div class="prop-title-mobile">
+<<<<<<< HEAD
             <?php  get_template_part('property-details/partials/title'); ?>             
+=======
+            <?php  get_template_part('property-details/partials/title'); ?> 
+            </div>
+>>>>>>> 72c0d7dc0ea0bc22fdcda7aa47a48b488f4c6617
             <?php get_template_part('property-details/partials/item-address'); ?>
             <?php get_template_part('property-details/partials/item-price'); ?>
 			</div>
