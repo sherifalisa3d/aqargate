@@ -36,12 +36,10 @@ function get_array_property_data(){
             $user_email = get_the_author_meta( 'user_email' , $userID );
             $user_mobile = get_the_author_meta( 'fave_author_mobile' , $userID );
             $license     = get_the_author_meta( 'fave_author_license' , $userID );
-<<<<<<< HEAD
+
             if( empty( $license ) ){
                 $license = 0 ;
             }
-=======
->>>>>>> 72c0d7dc0ea0bc22fdcda7aa47a48b488f4c6617
             $expiration_date = get_houzez_listing_expire($prop_id);
             // prr($expiration_date);
             $fave_property_price = get_post_meta( $prop_id, 'fave_property_price', true);
@@ -167,11 +165,11 @@ function get_array_property_data(){
             elseif( $user_role == "houzez_agency" ) { $Advertiser_character =  "شركة"; }
             elseif( $user_role == "houzez_owner"  ) { $Advertiser_character =  "مالك"; } 
             elseif( $user_role == "houzez_buyer"  ) { $Advertiser_character =  "مشتري"; } 
-<<<<<<< HEAD
+
             elseif( $user_role == "houzez_seller" ) { $Advertiser_character =  "مسوق" ; }
-=======
+
             elseif( $user_role == "houzez_seller" ) { $Advertiser_character =  "بائع" ; }
->>>>>>> 72c0d7dc0ea0bc22fdcda7aa47a48b488f4c6617
+
             elseif( $user_role == "houzez_manager") { $Advertiser_character = "مدير أملاك"; }
 
             $property_data[] = array(
@@ -225,11 +223,11 @@ function get_array_property_data(){
                  'Advertiser category' => $Advertiser_category,
                  'Advertiser license number' => $ad_number ,
                  'Advertiser`s email' => $user_email,
-<<<<<<< HEAD
+
                  'Advertiser registration number' => $license,
-=======
+
                  'Advertiser registration number' => 0,
->>>>>>> 72c0d7dc0ea0bc22fdcda7aa47a48b488f4c6617
+
                  'Authorization number' => $Authorization_number,
          );
             

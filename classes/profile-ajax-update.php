@@ -105,10 +105,6 @@ if ( !empty( $_POST['ad_number'] ) ) {
     delete_user_meta( $userID, 'aqar_author_ad_number' );
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 72c0d7dc0ea0bc22fdcda7aa47a48b488f4c6617
 // type_id
 if ( !empty( $_POST['aqar_author_type_id'] ) ) {
     $ad_number = sanitize_text_field( $_POST['aqar_author_type_id'] );

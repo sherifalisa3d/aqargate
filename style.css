@@ -9,14 +9,12 @@ Version:        2.5.0
     right: auto !important;
 }
 .qrcode, .item-price-wrap.aqar-gate, .page-title{
-<<<<<<< HEAD
     margin: 10px;
 }
 .block-content-wrap .detail-wrap li strong {
     white-space: normal !important;
-=======
     margin-left: 30px;
->>>>>>> 72c0d7dc0ea0bc22fdcda7aa47a48b488f4c6617
+
 }
 .prop-title-mobile{
 	max-width: calc( 100% - 120px );

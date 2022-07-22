@@ -35,11 +35,8 @@ $packages_page_link = houzez_get_template_link('template/template-packages.php')
 <div class="dashboard-content-block">
     <div class="row">
         <div class="col-md-3 col-sm-12">
-<<<<<<< HEAD
           <a href="<?php echo esc_url($packages_page_link); ?>" target="_blank" class="btn btn-warning mb-4 text-center w-100" style="display:none;">   
-=======
             <a href="<?php echo esc_url($packages_page_link); ?>" target="_blank" class="btn btn-warning mb-4 text-center w-100" style="display:none;">   
->>>>>>> 72c0d7dc0ea0bc22fdcda7aa47a48b488f4c6617
             شراء عضوية
         </a>
             <?php get_template_part('template-parts/dashboard/profile/photo'); ?>
