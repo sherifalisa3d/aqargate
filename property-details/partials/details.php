@@ -145,12 +145,12 @@ $ad_number = get_user_meta( $post->post_author, 'aqar_author_ad_number', true);
                 }
             }
         }
-        // add ad number in the end of property details . 
+
         if( !empty( $ad_number ) ) {
             echo '<li>
 	                <strong>رقم المعلن </strong> 
 	                <span>'.$ad_number.'</span>
-                  </li>';
+                </li>';
         }
         ?>
 	</ul>

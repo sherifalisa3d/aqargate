@@ -36,7 +36,6 @@ function get_array_property_data(){
             $user_email = get_the_author_meta( 'user_email' , $userID );
             $user_mobile = get_the_author_meta( 'fave_author_mobile' , $userID );
             $license     = get_the_author_meta( 'fave_author_license' , $userID );
-
             if( empty( $license ) ){
                 $license = 0 ;
             }
@@ -165,11 +164,7 @@ function get_array_property_data(){
             elseif( $user_role == "houzez_agency" ) { $Advertiser_character =  "شركة"; }
             elseif( $user_role == "houzez_owner"  ) { $Advertiser_character =  "مالك"; } 
             elseif( $user_role == "houzez_buyer"  ) { $Advertiser_character =  "مشتري"; } 
-
             elseif( $user_role == "houzez_seller" ) { $Advertiser_character =  "مسوق" ; }
-
-            elseif( $user_role == "houzez_seller" ) { $Advertiser_character =  "بائع" ; }
-
             elseif( $user_role == "houzez_manager") { $Advertiser_character = "مدير أملاك"; }
 
             $property_data[] = array(
@@ -223,11 +218,7 @@ function get_array_property_data(){
                  'Advertiser category' => $Advertiser_category,
                  'Advertiser license number' => $ad_number ,
                  'Advertiser`s email' => $user_email,
-
                  'Advertiser registration number' => $license,
-
-                 'Advertiser registration number' => 0,
-
                  'Authorization number' => $Authorization_number,
          );
             

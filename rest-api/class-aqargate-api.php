@@ -84,6 +84,25 @@ class AqarGateApi {
 			'permission_callback' => 'allow_access',
 			'methods'             => 'POST',
 		),
+        'aqargate_membership' => array(
+			'path'                => '/membership',
+			'callback'            => 'membership',
+			'permission_callback' => 'allow_access',
+			'methods'             => 'GET',
+		),
+        'favorite_properties' => array(
+			'path'                => '/favorite_properties',
+			'callback'            => 'favorite_properties',
+			'permission_callback' => 'allow_access',
+			'methods'             => 'GET',
+		),
+        'favorite_properties_add' => array(
+			'path'                => '/favorite_properties/add-remove',
+			'callback'            => 'favorite_properties_add',
+			'permission_callback' => 'allow_access',
+			'methods'             => 'POST',
+		),
+        
 	);	
 
     /**
@@ -126,6 +145,7 @@ class AqarGateApi {
         include_once ( 'api-prop-controller.php' );
         include_once ( 'api-agency-controller.php' );
         include_once ( 'api-register-controller.php' );
+        include_once ( 'api-membership-controller.php' );
     }
 
     /**
@@ -357,7 +377,7 @@ class AqarGateApi {
 	public function get_properties( WP_REST_Request $data ) {
 
         if(!isset( $data['data_collection'] ) ||  !in_array( $data['data_collection'] ,  $this->data_collections() )  ){
-            $this->error_response ( '2001' );
+            $this->error_response( '2001' );
         }
        
         $properties_data = [];
@@ -909,9 +929,132 @@ class AqarGateApi {
         
         return $this->response( $response );
     }
+    
+    /**
+     * membership
+     *
+     * @param  mixed $request
+     * @return void
+     */
+    public function membership( WP_REST_Request $request ){
+
+        if( isset( $_GET['user_id'] ) && !is_numeric( $_GET['user_id'] ) ){
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'Invalid User ID data'  )
+            );
+        }
+
+        if( isset( $_GET['user_id'] ) && !empty( $_GET['user_id'] ) && is_numeric( $_GET['user_id'] ) ){
+            $user_id = intval( $_GET['user_id'] );
+            $response = ag_user_membership( $user_id );
+        } else {
+            $response = ag_membership_type();
+        }
 
 
-  
+        return $this->response( $response );
+    }
+
+     
+     /**
+      * favorite_properties
+      *
+      * @param  mixed $request
+      * @return void
+      */
+     public function favorite_properties( WP_REST_Request $request ){
+
+        if( isset( $_GET['user_id'] ) && !is_numeric( $_GET['user_id'] ) ){
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'Invalid User ID data'  )
+            );
+        }
+
+        if( isset( $_GET['user_id'] ) && !empty( $_GET['user_id'] ) && is_numeric( $_GET['user_id'] ) ){
+            $userID  = intval( $_GET['user_id'] );
+            $fav_ids = 'houzez_favorites-'.$userID;
+            $fav_ids = get_option( $fav_ids );
+        } 
+
+        if( empty( $fav_ids ) ) {
+            return $this->error_response(
+                'rest_invalid_data',
+                __("You don't have any favorite listings yet!", 'houzez')
+            );
+        }
+        $search_qry = array('post_type' => 'property', 'post__in' => $fav_ids, 'numberposts' => -1 );
+        $search_qry['fields'] = 'ids';
+
+		$fav_props = get_posts( $search_qry );
+
+        if( count( $fav_props ) == 0 ){
+            return $this->error_response(
+                'rest_invalid_data',
+                __("You don't have any favorite listings yet!", 'houzez')
+            );
+        }
+
+        foreach ((array)$fav_props as $prop_id) {
+            $response[] = get_prop_data( $prop_id , $_GET['data_collection'] );
+        }
+        wp_reset_postdata();
+
+        return $this->response( $response );
+     }
+     
+     /**
+      * favorite_properties_add
+      *
+      * @param  mixed $request
+      * @return void
+      */
+     public function favorite_properties_add( WP_REST_Request $request ){
+
+        if( isset( $_GET['user_id'] ) && !is_numeric( $_GET['user_id'] ) ){
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'Invalid User ID data'  )
+            );
+        }
+
+        if( isset( $_GET['prop_id'] ) && !is_numeric( $_GET['prop_id'] ) && $this->is_property( $_GET['prop_id'] )){
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'Invalid Property ID data'  )
+            );
+        }
+
+        if( isset( $_GET['user_id'] ) && !empty( $_GET['user_id'] ) && is_numeric( $_GET['user_id'] ) ){
+            $userID  = intval( $_GET['user_id'] );
+            $fav_option = 'houzez_favorites-'.$userID;
+            $property_id = intval( $_GET['prop_id'] );
+            $current_prop_fav = get_option( 'houzez_favorites-'.$userID );
+
+            // Check if empty or not
+            if( empty( $current_prop_fav ) ) {
+                $prop_fav = array();
+                $prop_fav['1'] = $property_id;
+                update_option( $fav_option, $prop_fav );
+            } else {
+                if(  ! in_array ( $property_id, $current_prop_fav )  ) {
+                    $current_prop_fav[] = $property_id;
+                    update_option( $fav_option,  $current_prop_fav );
+                } else {
+                    $key = array_search( $property_id, $current_prop_fav );
+
+                    if( $key != false ) {
+                        unset( $current_prop_fav[$key] );
+                    }
+                    update_option( $fav_option, $current_prop_fav );
+
+                }
+            }
+        } 
+
+        return $this->response( $current_prop_fav );
+     }
 
 }
 

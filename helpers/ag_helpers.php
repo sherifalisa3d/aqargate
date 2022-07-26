@@ -194,7 +194,6 @@ function get_houzez_listing_expire($postID) {
             }
         }
     }
-
 }
 function houzez_get_agent_info_top($args, $type, $is_single = true)
 {
