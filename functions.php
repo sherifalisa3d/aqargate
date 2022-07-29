@@ -1,4 +1,6 @@
 <?php
+define('JWT_AUTH_SECRET_KEY', 'kiYDoMO-$2lq;O|nO.F+63_$W{Z9TfG&P=+fA6OWqRd RWI$oM6O?^XsHCJtz_:>');
+    
 add_action( 'wp_enqueue_scripts', 'ag_enqueue_styles' );
 function ag_enqueue_styles() {
     wp_enqueue_style( 'houzez-child', get_stylesheet_uri() );

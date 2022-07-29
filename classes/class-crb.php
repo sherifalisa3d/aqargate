@@ -36,7 +36,20 @@ class AG_CF
         ->add_tab( __( 'Property Export' ), array(
             Field::make( 'html', 'crb_information_text' )
             ->set_html( $html )
-        ) );
+        ) )
+
+        ->add_tab(
+            __( 'APP Options', 'ag' ),
+            array(
+                Field::make( 'file', 'ag_logo', __( 'app logo' ) )
+	            ->set_type( array( 'image' ) )->set_value_type( 'url' ),
+                Field::make( 'file', 'ag_reload_gif', __( 'app reload gif' ) )
+	            ->set_type( array( 'image' ) )->set_value_type( 'url' ),
+                Field::make( 'file', 'ag_json', __( 'app json' ) )
+	            ->set_type( array( 'json' ) )->set_value_type( 'url' ),
+               
+            )
+        );
     }
 
    

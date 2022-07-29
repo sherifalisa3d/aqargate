@@ -97,10 +97,64 @@ class AqarGateApi {
 			'methods'             => 'GET',
 		),
         'favorite_properties_add' => array(
-			'path'                => '/favorite_properties/add-remove',
+			'path'                => '/favorite_properties/add',
 			'callback'            => 'favorite_properties_add',
 			'permission_callback' => 'allow_access',
 			'methods'             => 'POST',
+		),
+        'favorite_properties_remove' => array(
+			'path'                => '/favorite_properties/remove',
+			'callback'            => 'favorite_properties_remove',
+			'permission_callback' => 'allow_access',
+			'methods'             => 'POST',
+		),
+        'aqargate_conversations' => array(
+			'path'                => '/conversations',
+			'callback'            => 'conversations',
+			'permission_callback' => 'allow_access',
+			'methods'             => 'GET',
+		),
+        'new_conversation' => array(
+			'path'                => '/conversations/new',
+			'callback'            => 'new_conversation',
+			'permission_callback' => 'allow_access',
+			'methods'             => 'POST',
+		),
+        'aqargate_conversations_messages' => array(
+			'path'                => '/conversations/messages',
+			'callback'            => 'conversations_messages',
+			'permission_callback' => 'allow_access',
+			'methods'             => WP_REST_Server::READABLE,
+		),
+        'new_conversations_messages' => array(
+			'path'                => '/conversations/messages/new',
+			'callback'            => 'new_conversation_message',
+			'permission_callback' => 'allow_access',
+			'methods'             => 'POST',
+		),
+        'aqargate_profile' => array(
+			'path'                => '/profile/fields',
+			'callback'            => 'profile_fields',
+			'permission_callback' => 'allow_access',
+			'methods'             => WP_REST_Server::READABLE,
+		),
+        'aqargate_profile' => array(
+			'path'                => '/profile/update',
+			'callback'            => 'profile_update',
+			'permission_callback' => 'allow_access',
+			'methods'             => 'POST',
+		),
+        'aqargate_role' => array(
+			'path'                => '/user/role',
+			'callback'            => 'user_role',
+			'permission_callback' => 'allow_access',
+			'methods'             => WP_REST_Server::READABLE,
+		),
+        'aqargate_info' => array(
+			'path'                => '/siteinfo',
+			'callback'            => 'siteinfo',
+			'permission_callback' => 'allow_access',
+			'methods'             => WP_REST_Server::READABLE,
 		),
         
 	);	
@@ -1041,20 +1095,802 @@ class AqarGateApi {
                 if(  ! in_array ( $property_id, $current_prop_fav )  ) {
                     $current_prop_fav[] = $property_id;
                     update_option( $fav_option,  $current_prop_fav );
-                } else {
-                    $key = array_search( $property_id, $current_prop_fav );
-
-                    if( $key != false ) {
-                        unset( $current_prop_fav[$key] );
-                    }
-                    update_option( $fav_option, $current_prop_fav );
-
-                }
+                } 
             }
         } 
 
         return $this->response( $current_prop_fav );
      }
+     
+     /**
+      * favorite_properties_remove
+      *
+      * @param  mixed $data
+      * @return void
+      */
+     public function favorite_properties_remove( $data ){
+        if( isset( $_GET['user_id'] ) && !is_numeric( $_GET['user_id'] ) ){
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'Invalid User ID data'  )
+            );
+        }
+
+        if( isset( $_GET['prop_id'] ) && !is_numeric( $_GET['prop_id'] ) && $this->is_property( $_GET['prop_id'] )){
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'Invalid Property ID data'  )
+            );
+        }
+
+        if( isset( $_GET['user_id'] ) && !empty( $_GET['user_id'] ) && is_numeric( $_GET['user_id'] ) ){
+            $userID  = intval( $_GET['user_id'] );
+            $fav_option = 'houzez_favorites-'.$userID;
+            $property_id = intval( $_GET['prop_id'] );
+            $current_prop_fav = get_option( 'houzez_favorites-'.$userID );
+
+            // Check if empty or not
+            if( empty( $current_prop_fav ) ) {
+                $prop_fav = array();
+                $prop_fav['1'] = $property_id;
+                update_option( $fav_option, $prop_fav );
+            } else {
+                
+                $key = array_search( $property_id, $current_prop_fav );
+
+                if( $key != false ) {
+                    unset( $current_prop_fav[$key] );
+                }
+                update_option( $fav_option, $current_prop_fav );
+
+                
+            }
+        } 
+
+        return $this->response( $current_prop_fav );
+        
+     }
+     
+     /**
+      * conversations
+      *
+      * @param  mixed $request
+      * @return void
+      */
+     public function conversations( $data ){
+
+        if( isset( $data['user_id'] ) && !is_numeric( $data['user_id'] ) ){
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'Invalid User ID data'  )
+            );
+        }
+
+        global $wpdb, $current_user;
+
+        $tabel = $wpdb->prefix . 'houzez_threads';
+        $thread_id = isset( $data['thread_id'] ) ? $data['thread_id']  : '';
+        $current_user_id = $data['user_id'];
+
+        $conversations = $wpdb->get_results(
+            "
+            SELECT * 
+            FROM $tabel
+            WHERE sender_id = $current_user_id OR receiver_id = $current_user_id 
+            "
+        );
+
+        if( empty( $conversations ) ) {
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'no conversations found'  )
+            );
+        }
+
+        $conversation_id = [];
+
+        foreach( (array)$conversations as $conversation ) {    
+
+            $conversation_id[] = $this->get_all_conversation( $user_id,  $conversation ) ;
+        }
+
+        $response['conversations'] =  $conversation_id;
+
+        return $this->response( $response );
+     }
+
+     
+     /**
+      * conversations_messages
+      *
+      * @param  mixed $request
+      * @return void
+      */
+     public function conversations_messages( $data ){
+
+        if( isset( $_GET['thread_id'] ) && !is_numeric( $_GET['thread_id'] ) && empty( $_GET['thread_id'] ) ){
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'Invalid conversations ID data'  )
+            );
+        }
+
+        if( isset( $_GET['user_id'] ) && !is_numeric( $_GET['user_id'] ) ){
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'Invalid User ID data'  )
+            );
+        }
+
+        global $wpdb, $current_user;
+
+        
+        $thread_id = isset( $_GET['thread_id'] ) ? $_GET['thread_id']  : '';
+        $prop_author_id = $_GET['user_id'];
+
+        $tabel = $wpdb->prefix . 'houzez_threads';
+        $conversation = $wpdb->get_row(
+            "
+            SELECT * 
+            FROM $tabel
+            WHERE id = $thread_id
+            AND (sender_id = $prop_author_id OR receiver_id = $prop_author_id)
+            "
+        );
+
+        $tabel = $wpdb->prefix . 'houzez_thread_messages';
+        $conversations_messages = $wpdb->get_results(
+            "
+            SELECT * 
+            FROM $tabel
+            WHERE thread_id = $thread_id
+            ORDER BY id DESC
+            "
+        );
+
+        if( empty( $conversations_messages ) || empty( $conversation ) ) {
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'no conversations found'  )
+            );
+        }
+
+        $thread_author = $conversation->sender_id;
+
+        if ( $thread_author == $prop_author_id ) {
+            $thread_author = $conversation->receiver_id;
+        } 
+        $response['id'] = $conversation->id;
+        $response['prop_id']   = $conversation->property_id;
+        $response['conversation_title']   = get_the_title( $conversation->property_id );
+        $response['conversation_author'] = $thread_author;
+
+        $thread_author_first_name  =  get_the_author_meta( 'first_name', $thread_author );
+        $response['conversation_author_first_name'] = $thread_author_first_name;
+        $thread_author_last_name  =  get_the_author_meta( 'last_name', $thread_author );
+        $response['conversation_author_last_name'] = $thread_author_last_name;
+        $thread_author_display_name = get_the_author_meta( 'display_name', $thread_author );
+        $response['conversation_author_display_name'] = $thread_author_display_name;
+        if( !empty($thread_author_first_name) && !empty($thread_author_last_name) ) {
+            $response['conversation_author_display_name'] = $thread_author_first_name.' '.$thread_author_last_name;
+        }
+
+        $user_custom_picture =  get_the_author_meta( 'fave_author_custom_picture' , $thread_author );
+        $response['user_custom_picture'] = $user_custom_picture;
+        if ( empty( $user_custom_picture )) {
+            $user_custom_picture = get_template_directory_uri().'/img/profile-avatar.png';
+            $response['user_custom_picture'] = $user_custom_picture;
+        }
+
+        $response['is_user_online'] = houzez_is_user_online( $thread_author );
+        
+        $messages_data = [];
+        foreach ( $conversations_messages as $message ) { 
+
+			$message_class = 'msg-me';
+			$message_author = $message->created_by;
+			$message_author_name = ucfirst( $thread_author_display_name );
+			$message_author_picture =  get_the_author_meta( 'fave_author_custom_picture' , $message_author );
+            
+			if ( $message_author == $current_user_id ) {
+				$message_author_name = esc_html__( 'Me', 'houzez' );
+				$message_class = '';
+			}
+
+			if ( empty( $message_author_picture )) {
+				$message_author_picture = get_template_directory_uri().'/img/profile-avatar.png';
+			}
+
+            $messages_data[] = [
+                'id'                     => $message->id,
+                'message_author'         => $message_author,
+                'message_author_name'    => $message_author_name,
+                'message_author_picture' => $message_author_picture,
+                'message_content'        => $message->message,
+                'message_attachments'    => $message->attachments,    
+            ];
+        }
+        $response['messages_data'] = $messages_data;
+
+        return $this->response( $response );
+     }
+     
+     /**
+      * new_conversation
+      *
+      * @param  mixed $data
+      * @return void
+      */
+     public function new_conversation( $data ){
+        
+        if( !isset( $_POST['prop_id'] ) ) {
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'Missing Property ID data'  )
+            );
+        }
+        if( !isset( $_POST['message'] ) ) {
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'Missing message data'  )
+            );
+        }
+
+        if( !isset( $_POST['user_id'] ) ) {
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'Missing User ID data' )
+            );
+        }
+         
+		if (  isset( $_POST['user_id'] ) && !empty( $_POST['user_id'] ) && isset( $_POST['prop_id'] ) && !empty( $_POST['prop_id'] ) && isset( $_POST['message'] ) && !empty( $_POST['message'] ) ) {
+            $message_attachments = Array ();
+			$message   = $_POST['message'];
+            $sender_id = $_POST['user_id'];
+
+			if ( isset( $_POST['propperty_image_ids'] ) && sizeof( $_POST['propperty_image_ids'] ) != 0 ) {
+				$message_attachments = $_POST['propperty_image_ids'];
+			}
+			$message_attachments = serialize( $message_attachments );
+            $thread_id   = $this->add_new_conversation( $data );
+            $message_id  = $this->send_message( $sender_id, $thread_id, $message, $message_attachments );
+			
+            
+            if( $message_id < 0 ){
+               return $this->error_response(                   
+                        '403',
+                        __("Some errors occurred! Please try again.", 'houzez')                   
+               );
+            }
+
+            return $this->response( $message_id );
+
+        }
+        
+     }
+ 
+     /**
+      * add_new_conversation
+      *
+      * @param  mixed $data
+      * @return void
+      */
+     public function add_new_conversation( $data ){
+
+        global $wpdb, $current_user;
+
+		$sender_id   = $data['user_id'];
+		$property_id = $data['prop_id'];
+		$receiver_id = get_post_field( 'post_author', $property_id );
+		$table_name  = $wpdb->prefix . 'houzez_threads';
+		$agent_display_option = get_post_meta( $property_id, 'fave_agent_display_option', true );
+		$prop_agent_display = get_post_meta( $property_id, 'fave_agents', true );
+		if( $prop_agent_display != '-1' && $agent_display_option == 'agent_info' ) {
+			$prop_agent_id = get_post_meta( $property_id, 'fave_agents', true );
+			$agent_user_id = get_post_meta( $prop_agent_id, 'houzez_user_meta_id', true );
+			if ( !empty( $agent_user_id ) && $agent_user_id != 0 ) {
+				$receiver_id = $agent_user_id;
+			}
+		} elseif( $agent_display_option == 'agency_info' ) {
+			$prop_agent_id = get_post_meta( $property_id, 'fave_property_agency', true );
+			$agent_user_id = get_post_meta( $prop_agent_id, 'houzez_user_meta_id', true );
+			if ( !empty( $agent_user_id ) && $agent_user_id != 0 ) {
+				$receiver_id = $agent_user_id;
+			}
+		}
+
+		$id = $wpdb->insert(
+			$table_name,
+			array(
+				'sender_id' => $sender_id,
+				'receiver_id' => $receiver_id,
+				'property_id' => $property_id,
+				'time'	=> current_time( 'mysql' )
+			),
+			array(
+				'%d',
+				'%d',
+				'%d',
+				'%s'
+			)
+		);
+
+		return $wpdb->insert_id;
+       
+    }
+     
+     /**
+      * send_message
+      *
+      * @param  mixed $sender_id
+      * @param  mixed $thread_id
+      * @param  mixed $message
+      * @param  mixed $message_attachments
+      * @return void
+      */
+     public function send_message( $sender_id, $thread_id, $message, $attachments ){
+        global $wpdb, $current_user;
+
+		if ( is_array( $attachments ) ) {
+			$attachments = serialize( $attachments );
+		}
+
+		$created_by =  $sender_id;
+		$table_name = $wpdb->prefix . 'houzez_thread_messages';
+
+		$message = stripslashes($message);
+		$message = htmlentities($message);
+
+		$message_id = $wpdb->insert(
+			$table_name,
+			array(
+				'created_by' => $created_by,
+				'thread_id' => $thread_id,
+				'message' => $message,
+				'attachments' => $attachments,
+				'time' => current_time( 'mysql' )
+			),
+			array(
+				'%d',
+				'%d',
+				'%s',
+				'%s',
+				'%s'
+			)
+		);
+
+		$tabel = $wpdb->prefix . 'houzez_threads';
+		$wpdb->update(
+			$tabel,
+			array(  'seen' => 0 ),
+			array( 'id' => $thread_id ),
+			array( '%d' ),
+			array( '%d' )
+		);
+
+		$message_query = "SELECT * FROM $tabel WHERE id = $thread_id";
+		$houzez_thread = $wpdb->get_row( $message_query );
+		$receiver_id = $houzez_thread->sender_id;
+
+		if ( $receiver_id == $created_by ) {
+			$receiver_id = $houzez_thread->receiver_id;
+		}
+
+		$receiver_data = get_user_by( 'id', $receiver_id );
+
+		apply_filters( 'houzez_message_email_notification', $thread_id, $message, $receiver_data->user_email, $created_by );
+
+		return $wpdb->insert_id;
+     }
+     
+     /**
+      * new_conversation_message
+      *
+      * @param  mixed $data
+      * @return void
+      */
+     public function new_conversation_message( $data ){
+        
+        if( !isset( $_POST['conversation_id'] ) ) {
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'Missing Conversation ID data [ conversation_id ]'  )
+            );
+        }
+        if( !isset( $_POST['message'] ) ) {
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'Missing message data'  )
+            );
+        }
+
+        if( !isset( $_POST['user_id'] ) ) {
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'Missing User ID data' )
+            );
+        }
+         
+		if (  isset( $_POST['user_id'] ) && !empty( $_POST['user_id'] ) && isset( $_POST['conversation_id'] ) && !empty( $_POST['conversation_id'] ) && isset( $_POST['message'] ) && !empty( $_POST['message'] ) ) {
+            $message_attachments = Array ();
+			$message   = $_POST['message'];
+            $sender_id = $_POST['user_id'];
+
+			if ( isset( $_POST['propperty_image_ids'] ) && sizeof( $_POST['propperty_image_ids'] ) != 0 ) {
+				$message_attachments = $_POST['propperty_image_ids'];
+			}
+			$message_attachments = serialize( $message_attachments );
+            $thread_id   = intval( $_POST['conversation_id'] );
+            $message_id  = $this->send_message( $sender_id, $thread_id, $message, $message_attachments );
+			
+            
+            if( $message_id < 0 ){
+               return $this->error_response(                   
+                        '403',
+                        __("Some errors occurred! Please try again.", 'houzez')                   
+               );
+            }
+
+            return $this->response( $message_id );
+        }
+    }
+    
+    /**
+     * get_all_conversation
+     *
+     * @param  mixed $user_id
+     * @param  mixed $conversation
+     * @return void
+     */
+    public function get_all_conversation( $user_id,  $conversation ){
+
+        global $wpdb, $userID;
+        $sender_id = $conversation->sender_id;
+        $receiver_id = $conversation->receiver_id;
+        $conversation_class = 'msg-unread table-new';
+        $tabel = $wpdb->prefix . 'houzez_thread_messages';
+        $sender_id = $conversation->sender_id;
+        $thread_id = $conversation->id;
+
+        $last_message = $wpdb->get_row(
+            "SELECT *
+                FROM $tabel
+                WHERE thread_id = $thread_id
+                ORDER BY id DESC"
+        );
+
+        $user_custom_picture =  get_the_author_meta( 'fave_author_custom_picture' , $sender_id );
+        $url_query = array( 'thread_id' => $thread_id, 'seen' => true );
+
+        if ( $last_message->created_by == $userID || $conversation->seen ) {
+            $conversation_class = '';
+            unset( $url_query['seen'] );
+        }
+
+        if ( empty( $user_custom_picture )) {
+            $user_custom_picture = get_template_directory_uri().'/img/profile-avatar.png';
+        }
+
+        $conversation_link = houzez_get_template_link_2('template/user_dashboard_messages.php');
+        $conversation_link = add_query_arg( $url_query, $thread_link );
+
+        $sender_first_name  =  get_the_author_meta( 'first_name', $sender_id );
+        $sender_last_name  =  get_the_author_meta( 'last_name', $sender_id );
+        $sender_display_name = get_the_author_meta( 'display_name', $sender_id );
+        if( !empty($sender_first_name) && !empty($sender_last_name) ) {
+            $sender_display_name = $sender_first_name.' '.$sender_last_name;
+        }
+
+        $last_sender_first_name  =  get_the_author_meta( 'first_name', $last_message->created_by );
+        $last_sender_last_name  =  get_the_author_meta( 'last_name', $last_message->created_by );
+        $last_sender_display_name = get_the_author_meta( 'display_name', $last_message->created_by );
+        if( !empty($last_sender_first_name) && !empty($last_sender_last_name) ) {
+            $last_sender_display_name = $last_sender_first_name.' '.$last_sender_last_name;
+        }
+        
+        $response['id'] = $thread_id ;
+        $response['user_custom_picture'] = $user_custom_picture ;
+        $response['from'] = ucfirst( $sender_display_name );
+        $response['property_id'] = $conversation->property_id;
+        $response['property_title'] = get_the_title( $conversation->property_id ) ;
+        $response['last_message'] = ucfirst( $last_sender_display_name ).': ' .$last_message->message;
+        $response['date'] = date_i18n( get_option('date_format').' '.get_option('time_format'), strtotime( $last_message->time ) ); 
+
+        return $response;
+
+    }
+
+    public function profile_fields( $data ){
+
+        if( isset( $data['user_id'] )  && empty( $data['user_id'] )) {
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'Missing User ID data' )
+            );
+        }
+
+        global $current_user, $houzez_local;
+        $userID = get_current_user_id();
+
+        if( isset( $data['user_id'] )  && !empty( $data['user_id'] )) {
+            $userID = $data['user_id'];
+        }
+       
+        $username               =   get_the_author_meta( 'user_login' , $userID );
+        $user_title             =   get_the_author_meta( 'fave_author_title' , $userID );
+        $first_name             =   get_the_author_meta( 'first_name' , $userID );
+        $last_name              =   get_the_author_meta( 'last_name' , $userID );
+        $user_email             =   get_the_author_meta( 'user_email' , $userID );
+        $user_mobile            =   get_the_author_meta( 'fave_author_mobile' , $userID );
+        $user_whatsapp          =   get_the_author_meta( 'fave_author_whatsapp' , $userID );
+        $user_phone             =   get_the_author_meta( 'fave_author_phone' , $userID );
+        $description            =   get_the_author_meta( 'description' , $userID );
+        $userlangs              =   get_the_author_meta( 'fave_author_language' , $userID );
+        $user_company           =   get_the_author_meta( 'fave_author_company' , $userID );
+        $tax_number             =   get_the_author_meta( 'fave_author_tax_no' , $userID );
+        $fax_number             =   get_the_author_meta( 'fave_author_fax' , $userID );
+        $user_address           =   get_the_author_meta( 'fave_author_address' , $userID );
+        $service_areas          =   get_the_author_meta( 'fave_author_service_areas' , $userID );
+        $specialties            =   get_the_author_meta( 'fave_author_specialties' , $userID );
+        $license                =   get_the_author_meta( 'fave_author_license' , $userID );
+        $gdpr_agreement         =   get_the_author_meta( 'gdpr_agreement' , $userID );
+        $id_number              =   get_the_author_meta( 'aqar_author_id_number' , $userID );
+        $ad_number              =   get_the_author_meta( 'aqar_author_ad_number' , $userID );
+        $type_id                =   get_the_author_meta( 'aqar_author_type_id' , $userID );
+       
+       if( houzez_is_agency() ) {
+           $title_position_lable = esc_html__('Agency Name','houzez');
+           $about_lable = esc_html__( 'About Agency', 'houzez' );
+       } else {
+           $title_position_lable =  esc_html__('Title / Position','houzez');
+           $about_lable = esc_html__( 'About me', 'houzez' );
+       }
+       
+       $profile_fields[] = [
+            'id'          => 'username',
+            'field_id'    => 'username',
+            'type'        => 'text',
+            'label'       => __('Username','houzez'),
+            'placeholder' => '',
+            'options'     => '',
+            'value'       => esc_attr( $username ),
+            'disabled'    => 1,
+        ];
+
+       $profile_fields[] = [
+            'id'          => 'useremail',
+            'field_id'    => 'useremail',
+            'type'        => 'text',
+            'label'       => __('Email','houzez'),
+            'placeholder' => '',
+            'options'     => '',
+            'value'       => esc_attr( $user_email ),
+            'disabled'    => 0,
+        ];
+
+        if( !houzez_is_agency() ):
+            $profile_fields[] = [
+                'id'          => 'firstname',
+                'field_id'    => 'firstname',
+                'type'        => 'text',
+                'label'       => __('First Name','houzez'),
+                'placeholder' => '',
+                'options'     => '',
+                'value'       => esc_attr( $first_name ),
+                'disabled'    => 0,
+            ];
+            $profile_fields[] = [
+                'id'          => 'lastname',
+                'field_id'    => 'lastname',
+                'type'        => 'text',
+                'label'       => __('Last Name','houzez'),
+                'placeholder' => '',
+                'options'     => '',
+                'value'       => esc_attr( $last_name ),
+                'disabled'    => 0,
+            ];
+        endif;
+
+        $profile_fields[] = [
+            'id'          => 'title',
+            'field_id'    => 'title',
+            'type'        => 'text',
+            'label'       => esc_attr($title_position_lable),
+            'placeholder' => '',
+            'options'     => '',
+            'value'       => esc_attr( $user_title ),
+            'disabled'    => 0,
+        ];
+        $profile_fields[] = [
+            'id'          => 'license',
+            'field_id'    => 'license',
+            'type'        => 'text',
+            'label'       => __('License', 'houzez'),
+            'placeholder' => '',
+            'options'     => '',
+            'value'       => esc_attr( $license ),
+            'disabled'    => 0,
+        ];
+        $profile_fields[] = [
+            'id'          => 'usermobile',
+            'field_id'    => 'usermobile',
+            'type'        => 'text',
+            'label'       => __('Mobile','houzez'),
+            'placeholder' => '',
+            'options'     => '',
+            'value'       => esc_attr( $user_mobile ),
+            'disabled'    => 0,
+        ];
+        $profile_fields[] = [
+            'id'          => 'whatsapp',
+            'field_id'    => 'whatsapp',
+            'type'        => 'text',
+            'label'       => __('Whatsapp','houzez'),
+            'placeholder' => '',
+            'options'     => '',
+            'value'       => esc_attr( $user_whatsapp ),
+            'disabled'    => 0,
+        ];
+        $profile_fields[] = [
+            'id'          => 'id_number',
+            'field_id'    => 'id_number',
+            'type'        => 'text',
+            'label'       => __('رقم الهوية / أو السجل التجاري','houzez'),
+            'placeholder' => '',
+            'options'     => '',
+            'value'       => esc_attr( $id_number ),
+            'disabled'    => 0,
+        ];
+        $profile_fields[] = [
+            'id'          => 'ad_number',
+            'field_id'    => 'ad_number',
+            'type'        => 'text',
+            'label'       => __('رقم المعلن','houzez'),
+            'placeholder' => '',
+            'options'     => '',
+            'value'       => esc_attr( $ad_number ),
+            'disabled'    => 0,
+        ];
+        $profile_fields[] = [
+            'id'          => 'aqar_author_type_id',
+            'field_id'    => 'aqar_author_type_id',
+            'type'        => 'select',
+            'label'       => __('نوع المعلن','houzez'),
+            'placeholder' => '',
+            'options'     => [
+                ['id' => '1', 'value' => 'مواطن'],
+                ['id' => '2', 'value' => 'مقيم'],
+                ['id' => '3', 'value' => 'منشأة'],
+            ],
+            'value'       => esc_attr( $type_id ),
+            'disabled'    => 0,
+        ];
+        $profile_fields[] = [
+            'id'          => 'tax_number',
+            'field_id'    => 'tax_number',
+            'type'        => 'text',
+            'label'       => __('Tax Number','houzez'),
+            'placeholder' => '',
+            'options'     => '',
+            'value'       => esc_attr( $tax_number ),
+            'disabled'    => 0,
+        ];
+        $profile_fields[] = [
+            'id'          => 'userphone',
+            'field_id'    => 'userphone',
+            'type'        => 'text',
+            'label'       => __('Phone','houzez'),
+            'placeholder' => '',
+            'options'     => '',
+            'value'       => esc_attr( $user_phone ),
+            'disabled'    => 0,
+        ];
+        if( !houzez_is_agency() ):
+        $profile_fields[] = [
+            'id'          => 'user_company',
+            'field_id'    => 'user_company',
+            'type'        => 'text',
+            'label'       => __('Company Name','houzez'),
+            'placeholder' => '',
+            'options'     => '',
+            'value'       => esc_attr( $user_company ),
+            'disabled'    => 0,
+        ];
+        endif;
+        $profile_fields[] = [
+            'id'          => 'user_address',
+            'field_id'    => 'user_address',
+            'type'        => 'text',
+            'label'       => __('Address','houzez'),
+            'placeholder' => '',
+            'options'     => '',
+            'value'       => esc_attr( $user_address ),
+            'disabled'    => 0,
+        ];
+        $profile_fields[] = [
+            'id'          => 'bio',
+            'field_id'    => 'bio',
+            'type'        => 'textarea',
+            'label'       => $about_lable,
+            'placeholder' => '',
+            'options'     => '',
+            'value'       => $description,
+            'disabled'    => 0,
+        ];
+
+        
+
+       return $this->response( $profile_fields );
+    }
+     
+
+    public function profile_update ( $data ){
+
+        if( !isset( $data['user_id'] ) ) {
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'Missing User ID data' )
+            );
+        }
+        if( isset( $data['user_id'] )  && empty( $data['user_id'] )) {
+            return $this->error_response(
+                'rest_invalid_data',
+                __( 'Missing User ID data' )
+            );
+        }
+        
+        $update_profile = api_update_profile( $data );
+
+        return $this->response( $update_profile );
+
+    }
+    
+    /**
+     * user_role
+     *
+     * @param  mixed $data
+     * @return void
+     */
+    public function user_role( $data ){
+
+        $user_role = [];
+
+        if( $show_hide_roles['agent'] != 1 ) {
+            $user_role[] = [ 'id' => 'houzez_agent', 'name' => houzez_option('agent_role')];
+        }
+        if( $show_hide_roles['agency'] != 1 ) {
+            $user_role[] = [ 'id' => 'houzez_agency', 'name' => houzez_option('agency_role')];
+        }
+        if( $show_hide_roles['owner'] != 1 ) {
+            $user_role[] = [ 'id' => 'houzez_owner', 'name' => houzez_option('owner_role')];
+        }
+        if( $show_hide_roles['buyer'] != 1 ) {
+            $user_role[] = [ 'id' => 'houzez_buyer', 'name' => houzez_option('buyer_role')];
+        }
+        
+        return $this->response( $user_role );
+    }
+    
+    /**
+     * siteinfo
+     *
+     * @param  mixed $data
+     * @return void
+     */
+    public function siteinfo( $data )
+    {
+        $response = [];
+        
+        $response['name'] = get_bloginfo( 'name' );
+        $response['description'] = get_bloginfo( 'description' );
+        $response['timezone_string'] = get_option( 'timezone_string' );
+        $response['gmt_offset']  = get_option( 'gmt_offset' );
+        $response['logo'] = carbon_get_theme_option( 'ag_logo' );
+        $response['reload_gif'] = carbon_get_theme_option( 'ag_reload_gif' );
+        $response['json'] = carbon_get_theme_option( 'ag_json' );
+
+        return $this->response( $response );
+    }
 
 }
 
